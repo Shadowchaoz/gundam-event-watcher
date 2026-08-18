@@ -2,7 +2,7 @@ name: Check for new Gundam TCG events
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/180 * * * *"
   workflow_dispatch: {}
 
 permissions:
