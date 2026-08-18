@@ -3,11 +3,23 @@ import hashlib
 import os
 import difflib
 import time
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 import requests
 from bs4 import BeautifulSoup
 
 STATE_FILE = "data/state.json"
 SITES_FILE = "sites.json"
+
+# Monitoring hours:
+# 06:00 AM through 11:59 PM Eastern Time.
+# The watcher pauses from midnight through 5:59 AM.
+TIMEZONE = "America/Toronto"
+MONITOR_START_HOUR = 6
+
+# Delay between website requests, in seconds.
+REQUEST_DELAY = 2
 
 
 def load_json(path, default):
@@ -19,8 +31,10 @@ def load_json(path, default):
 
 def save_json(path, data):
     dirname = os.path.dirname(path)
+
     if dirname:
         os.makedirs(dirname, exist_ok=True)
+
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
@@ -30,6 +44,7 @@ def extract_text(html, selector):
 
     if selector:
         node = soup.select_one(selector)
+
         text = (
             node.get_text(" ", strip=True)
             if node
@@ -59,10 +74,9 @@ def make_diff(old_text, new_text, max_lines=20):
     if not diff:
         return "The page changed, but no readable text difference was found."
 
-    # Make the diff easier to read in Discord.
-    # Skip the standard --- / +++ headers.
     useful_lines = [
-        line for line in diff
+        line
+        for line in diff
         if not line.startswith("---")
         and not line.startswith("+++")
         and not line.startswith("@@")
@@ -97,7 +111,36 @@ def send_discord(webhook_url, message):
         print(f"Failed to send Discord notification: {e}")
 
 
+def within_monitoring_hours():
+    """
+    Return True from 6:00 AM through 11:59 PM Eastern Time.
+
+    Return False from midnight through 5:59 AM Eastern Time.
+    """
+
+    eastern_time = datetime.now(ZoneInfo(TIMEZONE))
+
+    return eastern_time.hour >= MONITOR_START_HOUR
+
+
 def main():
+    eastern_time = datetime.now(ZoneInfo(TIMEZONE))
+
+    print(
+        "Current Eastern time: "
+        f"{eastern_time.strftime('%Y-%m-%d %I:%M:%S %p %Z')}"
+    )
+
+    # Do not contact any websites during the overnight pause.
+    if not within_monitoring_hours():
+        print(
+            "Outside monitoring hours. "
+            "Monitoring resumes at 6:00 AM Eastern Time."
+        )
+        return
+
+    print("Within monitoring hours. Starting website checks.")
+
     webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
     sites = load_json(SITES_FILE, [])
     state = load_json(STATE_FILE, {})
@@ -114,8 +157,9 @@ def main():
         selector = site.get("selector")
 
         # Wait between requests to avoid hitting websites too quickly.
+        # Do not wait before the first request.
         if index > 0:
-            time.sleep(2)
+            time.sleep(REQUEST_DELAY)
 
         try:
             resp = requests.get(
@@ -128,6 +172,7 @@ def main():
                 },
                 timeout=20,
             )
+
             resp.raise_for_status()
 
         except Exception as e:
@@ -135,6 +180,7 @@ def main():
             continue
 
         text = extract_text(resp.text, selector)
+
         new_hash = hashlib.sha256(
             text.encode("utf-8")
         ).hexdigest()
@@ -142,6 +188,8 @@ def main():
         prev_entry = state.get(url)
 
         if prev_entry is None:
+            # First time seeing this site:
+            # record the baseline without sending an alert.
             print(f"Baseline recorded for {name}")
 
         elif prev_entry["hash"] != new_hash:
@@ -160,11 +208,14 @@ def main():
             )
 
             send_discord(webhook_url, message)
+
             changed_any = True
 
         else:
             print(f"No change for {name}")
 
+        # Save both the hash and the normalized text.
+        # The text allows future runs to show what changed.
         state[url] = {
             "hash": new_hash,
             "name": name,
@@ -173,11 +224,10 @@ def main():
 
     save_json(STATE_FILE, state)
 
-    print(
-        "Done — changes detected."
-        if changed_any
-        else "Done — no changes."
-    )
+    if changed_any:
+        print("Done — changes detected.")
+    else:
+        print("Done — no changes.")
 
 
 if __name__ == "__main__":
