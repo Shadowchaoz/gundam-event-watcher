@@ -2,6 +2,7 @@ import json
 import hashlib
 import os
 import difflib
+import time
 import requests
 from bs4 import BeautifulSoup
 
@@ -107,10 +108,14 @@ def main():
 
     changed_any = False
 
-    for site in sites:
+    for index, site in enumerate(sites):
         name = site.get("name", site["url"])
         url = site["url"]
         selector = site.get("selector")
+
+        # Wait between requests to avoid hitting websites too quickly.
+        if index > 0:
+            time.sleep(2)
 
         try:
             resp = requests.get(
