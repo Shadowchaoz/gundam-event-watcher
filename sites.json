@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Example Game Store",
+    "url": "https://example-game-store.com/events",
+    "selector": ""
+  },
+  {
+    "name": "Another Local Shop",
+    "url": "https://another-shop.com/tournaments",
+    "selector": ""
+  }
+]
