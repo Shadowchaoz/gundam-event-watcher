@@ -1,12 +1,182 @@
 [
   {
-    "name": "Example Game Store",
-    "url": "https://example-game-store.com/events",
+    "name": "PVP Shoppe",
+    "url": "https://pvpshoppe.com/collections/event",
     "selector": ""
   },
   {
-    "name": "Another Local Shop",
-    "url": "https://another-shop.com/tournaments",
+    "name": "New Realm",
+    "url": "https://newrealmgames.com/collections/tournament-entry",
+    "selector": ""
+  },
+  {
+    "name": "Game Time Collectibles",
+    "url": "https://itsgametime.ca/collections/event-entry",
+    "selector": ""
+  },
+  {
+    "name": "Enter the Battlefield - Oakville",
+    "url": "https://enterthebattlefield.ca/collections/events",
+    "selector": ""
+  },
+  {
+    "name": "Nerdvana",
+    "url": "https://nerdvanacardsandgames.com/pages/events",
+    "selector": ""
+  },
+  {
+    "name": "Game3",
+    "url": "https://game3.ca/collections/events?sort=-publishedTimestamp&q=gundam",
+    "selector": ""
+  },
+  {
+    "name": "Twin Moons",
+    "url": "https://twinmoonstcg.com/collections/event-tickets",
+    "selector": ""
+  },
+  {
+    "name": "Springer Hobbies",
+    "url": "https://springerhobbies.com/collections/event-tickets",
+    "selector": ""
+  },
+  {
+    "name": "Game Shack",
+    "url": "https://www.gameshack.ca/pages/event-calendar",
+    "selector": ""
+  },
+  {
+    "name": "Fantasy Forged",
+    "url": "https://www.fantasyforged.ca/pages/events",
+    "selector": ""
+  },
+  {
+    "name": "Kanzen Games",
+    "url": "https://kanzengames.com/collections/tournament-ticket",
+    "selector": ""
+  },
+  {
+    "name": "Boardgame Bliss",
+    "url": "https://www.boardgamebliss.com/pages/bgb-events-new",
+    "selector": ""
+  },
+  {
+    "name": "Manta Trading",
+    "url": "https://mantatrading.com/collections/events",
+    "selector": ""
+  },
+  {
+    "name": "Comfy Hobbies",
+    "url": "https://comfyhobbies.com/collections/bandai-events",
+    "selector": ""
+  },
+  {
+    "name": "Panda Hobby",
+    "url": "https://pandahobby.ca/pages/calendar",
+    "selector": ""
+  },
+  {
+    "name": "Hobbiesville",
+    "url": "https://hobbiesville.com/pages/event-calendar",
+    "selector": ""
+  },
+  {
+    "name": "The Negative Zone",
+    "url": "https://negativezonecomics.com/pages/events",
+    "selector": ""
+  },
+  {
+    "name": "Nexpack",
+    "url": "https://enterprise.tcgsync.com/events/NexPack_Collectibles",
+    "selector": ""
+  },
+  {
+    "name": "WoodforSheep",
+    "url": "https://www.woodforsheep.ca/pages/event-scheduling",
+    "selector": ""
+  },
+  {
+    "name": "A&C Games",
+    "url": "https://acgamesonline.com/collections/a-c-games-events-1",
+    "selector": ""
+  },
+  {
+    "name": "Untouchables",
+    "url": "https://untouchables.ca/collections/major-events",
+    "selector": ""
+  },
+  {
+    "name": "Cards and Coasters",
+    "url": "https://cardsandcoasters.com/collections/events",
+    "selector": ""
+  },
+  {
+    "name": "Sunny Hobbies",
+    "url": "https://sunnyhobbies.com/collections/frontpage",
+    "selector": ""
+  },
+  {
+    "name": "Claw Me Baby",
+    "url": "https://www.clawmebaby.ca/collections/events",
+    "selector": ""
+  },
+  {
+    "name": "Dungeon Comics",
+    "url": "https://www.dungeoncomicsandcards.ca/collections/disney-lorcana",
+    "selector": ""
+  },
+  {
+    "name": "Heavens Collectibles",
+    "url": "https://heavenscollectibles.ca",
+    "selector": ""
+  },
+  {
+    "name": "Royalty Cards",
+    "url": "https://royaltycardsandcollectibles.com/collections/events",
+    "selector": ""
+  },
+  {
+    "name": "Hope Club Collectibles",
+    "url": "https://hopeclubshop.ca/collections/tournaments/tournament",
+    "selector": ""
+  },
+  {
+    "name": "The Upper Hand",
+    "url": "https://www.theupperhand.ca/collections/event-registration",
+    "selector": ""
+  },
+  {
+    "name": "MyPops",
+    "url": "https://www.mypops.ca/collections/events?page=4",
+    "selector": ""
+  },
+  {
+    "name": "Northern War Table",
+    "url": "https://northernwartable.com/collections/events",
+    "selector": ""
+  },
+  {
+    "name": "401 Games",
+    "url": "https://store.401games.ca/collections/events-by-game-gundam",
+    "selector": ""
+  },
+  {
+    "name": "Heroes World",
+    "url": "https://heroesworld.ca/pages/heroes-world-events",
+    "selector": ""
+  },
+  {
+    "name": "Emmett's Toy Store",
+    "url": "https://emmettstoystop.com/pages/events",
+    "selector": ""
+  },
+  {
+    "name": "Derpy's",
+    "url": "https://events.derpycards.ca/",
+    "selector": ""
+  },
+  {
+    "name": "Clutch Games",
+    "url": "https://clutchgames.ca/pages/events",
     "selector": ""
   }
 ]
