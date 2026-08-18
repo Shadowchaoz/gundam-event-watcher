@@ -1,1 +1,146 @@
-{}
+{
+  "https://pvpshoppe.com/collections/event": {
+    "hash": "6fc8a65382fae2c4758daf7dd629c7936b6d36248cefaeafd0b27c14af5aa4fe",
+    "name": "PVP Shoppe"
+  },
+  "https://newrealmgames.com/collections/tournament-entry": {
+    "hash": "7107266c7cb395df1b21866999f5bfae500b25a71c1b3a71b06de151b8be2763",
+    "name": "New Realm"
+  },
+  "https://itsgametime.ca/collections/event-entry": {
+    "hash": "8b7d87e2ede960356b3314b4103fa1fab8b78f928517a4442303472962b348fc",
+    "name": "Game Time Collectibles"
+  },
+  "https://enterthebattlefield.ca/collections/events": {
+    "hash": "51d3208d2209cc60c2feef993557ca75aa5ab6e82a170dc0da0dfa585534f092",
+    "name": "Enter the Battlefield - Oakville"
+  },
+  "https://nerdvanacardsandgames.com/pages/events": {
+    "hash": "1f4ee1f4fad75c958afda095d48363ee76d0552780e90fa5ac69bdda4e6fda7e",
+    "name": "Nerdvana"
+  },
+  "https://game3.ca/collections/events?sort=-publishedTimestamp&q=gundam": {
+    "hash": "11d1ad7ebcc7d5f43130d97d4d8ea8eb19d007598e7e7a706cefa4277cd7989e",
+    "name": "Game3"
+  },
+  "https://twinmoonstcg.com/collections/event-tickets": {
+    "hash": "79cac65d69bb05f1f4cb9caadfbf147842a7634e8fd5396dd5c6d52aba59c859",
+    "name": "Twin Moons"
+  },
+  "https://springerhobbies.com/collections/event-tickets": {
+    "hash": "ac467df69968b4fda22c095dedd5f93093c2fab1315494fcf9f8cf5ca6961dda",
+    "name": "Springer Hobbies"
+  },
+  "https://www.gameshack.ca/pages/event-calendar": {
+    "hash": "f705b468bb5bee3f42b20392b465a4a231635abaa346b95c87af394ca1e8d44d",
+    "name": "Game Shack"
+  },
+  "https://www.fantasyforged.ca/pages/events": {
+    "hash": "028dc073c24f349b1632fae88bdc7d41d6b88d603e51d0fab3f19099273811a7",
+    "name": "Fantasy Forged"
+  },
+  "https://kanzengames.com/collections/tournament-ticket": {
+    "hash": "afbf4a2ba69e3d3d76b32cd1f5f0dec94f740addd9f656b59bef2191e7fd18c2",
+    "name": "Kanzen Games"
+  },
+  "https://www.boardgamebliss.com/pages/bgb-events-new": {
+    "hash": "9b2de938bd5d87ddb26e9ac39810a2c4a03b830b5f7881517dabf92ec891c587",
+    "name": "Boardgame Bliss"
+  },
+  "https://mantatrading.com/collections/events": {
+    "hash": "c594597de948226eac233664f17c823c372927e718c87b0999a25ce6a8a52b60",
+    "name": "Manta Trading"
+  },
+  "https://comfyhobbies.com/collections/bandai-events": {
+    "hash": "de2d94f76f9d5ab9ce72595dbf1c0dcf9e4803aaeed71dea8a503ab407029a79",
+    "name": "Comfy Hobbies"
+  },
+  "https://pandahobby.ca/pages/calendar": {
+    "hash": "84c32b74e7b6a6fae114ea5119c5b2a610fc851f739cf09a48e10c8c28c83ff8",
+    "name": "Panda Hobby"
+  },
+  "https://hobbiesville.com/pages/event-calendar": {
+    "hash": "99a530330527b3ef7eda2e1b9650b3688e14c0543c29b12019050ca6f8f221ae",
+    "name": "Hobbiesville"
+  },
+  "https://negativezonecomics.com/pages/events": {
+    "hash": "263a2643b61c1dd5be23f85a2d59a3475ba6add68e55e47a31a5072423686dce",
+    "name": "The Negative Zone"
+  },
+  "https://enterprise.tcgsync.com/events/NexPack_Collectibles": {
+    "hash": "137cc6c6f43698c65cdc9a2fffedbdd5674804b0a0cdb7187e2511657856f0e9",
+    "name": "Nexpack"
+  },
+  "https://www.woodforsheep.ca/pages/event-scheduling": {
+    "hash": "39b9d457e9859f4e5100902bc4fafd719c902e9edeef18ec9cbd3431786e1149",
+    "name": "WoodforSheep"
+  },
+  "https://acgamesonline.com/collections/a-c-games-events-1": {
+    "hash": "2cd288df9a0f378a03f6cf25453eb3d60a0b6236c6cefe88a66b214b9bb69f7d",
+    "name": "A&C Games"
+  },
+  "https://untouchables.ca/collections/major-events": {
+    "hash": "3859fc83d421f26e9cba6963a51eba32b624dd0807455fd811be8c7c15859df2",
+    "name": "Untouchables"
+  },
+  "https://cardsandcoasters.com/collections/events": {
+    "hash": "40b6675e23d5c1ef87e447a3721469da5ec3da6d9fe4b2612a6ae59e82fc171d",
+    "name": "Cards and Coasters"
+  },
+  "https://sunnyhobbies.com/collections/frontpage": {
+    "hash": "3347f0b5c5d7e9f619468e5a49fc6fea33f745387faec35b0dff9368f422fae8",
+    "name": "Sunny Hobbies"
+  },
+  "https://www.clawmebaby.ca/collections/events": {
+    "hash": "781f3f53f2ce518ef6822874760874ece2df5faa6e6b7371f79b433c495ff6b6",
+    "name": "Claw Me Baby"
+  },
+  "https://www.dungeoncomicsandcards.ca/collections/disney-lorcana": {
+    "hash": "8c68cc95260a61e52ce738ea32b3c97d3f890cc83e11404f0b76ef9158d8cf79",
+    "name": "Dungeon Comics"
+  },
+  "https://heavenscollectibles.ca": {
+    "hash": "e6566dd7389fdac58970280c66e527235fe9a4815ad7cd2ceb3a9b1ef7b53c7d",
+    "name": "Heavens Collectibles"
+  },
+  "https://royaltycardsandcollectibles.com/collections/events": {
+    "hash": "471bf1b0b41ac98f3eb194b15bb7ba12c3036b837133d6b85eeb34089d0fcbad",
+    "name": "Royalty Cards"
+  },
+  "https://hopeclubshop.ca/collections/tournaments/tournament": {
+    "hash": "9eea924f2f75a1fb01977126940ed9cfaa0655153d03624a23fe83e301b91cda",
+    "name": "Hope Club Collectibles"
+  },
+  "https://www.theupperhand.ca/collections/event-registration": {
+    "hash": "a201ea5aee16517077952bb3558963619de8f732c85e7e515300ce40feed7a8d",
+    "name": "The Upper Hand"
+  },
+  "https://www.mypops.ca/collections/events?page=4": {
+    "hash": "920fd52d35180c9a65aac4e30b430e6993d7e3474282beee1e1b805534def99f",
+    "name": "MyPops"
+  },
+  "https://northernwartable.com/collections/events": {
+    "hash": "c78f21ac59af10b94198fd755446be00966464d834e7f4eb31f1be4e3ed925f2",
+    "name": "Northern War Table"
+  },
+  "https://store.401games.ca/collections/events-by-game-gundam": {
+    "hash": "c25005f9bbc57a990d38ec87ea3143dafc0aac1fbd26461be4c7078f55d537da",
+    "name": "401 Games"
+  },
+  "https://heroesworld.ca/pages/heroes-world-events": {
+    "hash": "801d7d0e7c0e8ac7e816d082a8e6808b1c00ac97ed9b282dcca0093ca1e519cc",
+    "name": "Heroes World"
+  },
+  "https://emmettstoystop.com/pages/events": {
+    "hash": "dc0a2d11c510e3fa1a2753358a3da80d5c39835ba3aac960fd642b38453b3b24",
+    "name": "Emmett's Toy Store"
+  },
+  "https://events.derpycards.ca/": {
+    "hash": "e47a6265d2cadf3827fceb293063468cc3454c574cd78a0f3cfdc04d30c82431",
+    "name": "Derpy's"
+  },
+  "https://clutchgames.ca/pages/events": {
+    "hash": "6c9993dbcb209d64e0087b04bbc98202796126f3593b26cd67e9d2ca7a758cd7",
+    "name": "Clutch Games"
+  }
+}
