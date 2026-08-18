@@ -1,6 +1,7 @@
 import json
 import hashlib
 import os
+import difflib
 import requests
 from bs4 import BeautifulSoup
 
@@ -25,20 +26,72 @@ def save_json(path, data):
 
 def extract_text(html, selector):
     soup = BeautifulSoup(html, "html.parser")
+
     if selector:
         node = soup.select_one(selector)
-        text = node.get_text(" ", strip=True) if node else soup.get_text(" ", strip=True)
+        text = (
+            node.get_text(" ", strip=True)
+            if node
+            else soup.get_text(" ", strip=True)
+        )
     else:
         text = soup.get_text(" ", strip=True)
+
     return " ".join(text.split())
+
+
+def make_diff(old_text, new_text, max_lines=20):
+    old_words = old_text.split()
+    new_words = new_text.split()
+
+    diff = list(
+        difflib.unified_diff(
+            old_words,
+            new_words,
+            fromfile="Before",
+            tofile="After",
+            lineterm="",
+            n=3,
+        )
+    )
+
+    if not diff:
+        return "The page changed, but no readable text difference was found."
+
+    # Make the diff easier to read in Discord.
+    # Skip the standard --- / +++ headers.
+    useful_lines = [
+        line for line in diff
+        if not line.startswith("---")
+        and not line.startswith("+++")
+        and not line.startswith("@@")
+    ]
+
+    if len(useful_lines) > max_lines:
+        useful_lines = useful_lines[:max_lines]
+        useful_lines.append("... (diff truncated)")
+
+    return "\n".join(useful_lines)
 
 
 def send_discord(webhook_url, message):
     if not webhook_url:
         print("No webhook configured, skipping notification.")
         return
+
     try:
-        requests.post(webhook_url, json={"content": message}, timeout=15)
+        response = requests.post(
+            webhook_url,
+            json={"content": message},
+            timeout=15,
+        )
+
+        if response.status_code >= 400:
+            print(
+                f"Discord webhook returned HTTP {response.status_code}: "
+                f"{response.text}"
+            )
+
     except Exception as e:
         print(f"Failed to send Discord notification: {e}")
 
@@ -62,36 +115,64 @@ def main():
         try:
             resp = requests.get(
                 url,
-                headers={"User-Agent": "Mozilla/5.0 (compatible; GundamEventWatcher/1.0)"},
+                headers={
+                    "User-Agent": (
+                        "Mozilla/5.0 "
+                        "(compatible; GundamEventWatcher/1.0)"
+                    )
+                },
                 timeout=20,
             )
             resp.raise_for_status()
+
         except Exception as e:
             print(f"Error fetching {name} ({url}): {e}")
             continue
 
         text = extract_text(resp.text, selector)
-        new_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        new_hash = hashlib.sha256(
+            text.encode("utf-8")
+        ).hexdigest()
 
         prev_entry = state.get(url)
 
         if prev_entry is None:
-            # First time seeing this site: record the baseline, don't alert yet.
             print(f"Baseline recorded for {name}")
+
         elif prev_entry["hash"] != new_hash:
             print(f"Change detected for {name}")
-            send_discord(
-                webhook_url,
-                f"\U0001F4E2 **{name}** just updated their events page!\n{url}",
+
+            old_text = prev_entry.get("text", "")
+
+            diff = make_diff(old_text, text)
+
+            message = (
+                f"\U0001F4E2 **{name}** just updated their events page!\n"
+                f"{url}\n\n"
+                f"```diff\n"
+                f"{diff}\n"
+                f"```"
             )
+
+            send_discord(webhook_url, message)
             changed_any = True
+
         else:
             print(f"No change for {name}")
 
-        state[url] = {"hash": new_hash, "name": name}
+        state[url] = {
+            "hash": new_hash,
+            "name": name,
+            "text": text,
+        }
 
     save_json(STATE_FILE, state)
-    print("Done — changes detected." if changed_any else "Done — no changes.")
+
+    print(
+        "Done — changes detected."
+        if changed_any
+        else "Done — no changes."
+    )
 
 
 if __name__ == "__main__":
