@@ -29,7 +29,7 @@
   },
   "https://springerhobbies.com/collections/event-tickets": {
     "name": "Springer Hobbies",
-    "anniversary_found": true
+    "anniversary_found": false
   },
   "https://www.gameshack.ca/pages/event-calendar": {
     "name": "Game Shack",
@@ -49,7 +49,7 @@
   },
   "https://mantatrading.com/collections/events": {
     "name": "Manta Trading",
-    "anniversary_found": true
+    "anniversary_found": false
   },
   "https://comfyhobbies.com/collections/bandai-events": {
     "name": "Comfy Hobbies",
@@ -109,7 +109,7 @@
   },
   "https://hopeclubshop.ca/collections/tournaments/tournament": {
     "name": "Hope Club Collectibles",
-    "anniversary_found": true
+    "anniversary_found": false
   },
   "https://www.theupperhand.ca/collections/event-registration": {
     "name": "The Upper Hand",
@@ -133,7 +133,7 @@
   },
   "https://emmettstoystop.com/pages/events": {
     "name": "Emmett's Toy Store",
-    "anniversary_found": true
+    "anniversary_found": false
   },
   "https://events.derpycards.ca/": {
     "name": "Derpy's",
