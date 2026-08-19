@@ -1,7 +1,5 @@
 import json
-import hashlib
 import os
-import difflib
 import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -9,16 +7,23 @@ from zoneinfo import ZoneInfo
 import requests
 from bs4 import BeautifulSoup
 
+
 STATE_FILE = "data/state.json"
 SITES_FILE = "sites.json"
 
-# Monitoring hours:
-# 06:00 AM through 11:59 PM Eastern Time.
-# The watcher pauses from midnight through 5:59 AM.
+# Eastern Time
 TIMEZONE = "America/Toronto"
+
+# Don't check websites between midnight and 6:00 AM Eastern.
 MONITOR_START_HOUR = 6
 
-# Delay between website requests, in seconds.
+# Stop the project after October 31, 2026.
+END_DATE = datetime(2026, 11, 1, tzinfo=ZoneInfo(TIMEZONE))
+
+# Word we're looking for.
+KEYWORD = "anniversary"
+
+# Seconds to wait between website requests.
 REQUEST_DELAY = 2
 
 
@@ -26,6 +31,7 @@ def load_json(path, default):
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
+
     return default
 
 
@@ -45,48 +51,18 @@ def extract_text(html, selector):
     if selector:
         node = soup.select_one(selector)
 
-        text = (
-            node.get_text(" ", strip=True)
-            if node
-            else soup.get_text(" ", strip=True)
-        )
+        if node:
+            text = node.get_text(" ", strip=True)
+        else:
+            text = soup.get_text(" ", strip=True)
     else:
         text = soup.get_text(" ", strip=True)
 
     return " ".join(text.split())
 
 
-def make_diff(old_text, new_text, max_lines=20):
-    old_words = old_text.split()
-    new_words = new_text.split()
-
-    diff = list(
-        difflib.unified_diff(
-            old_words,
-            new_words,
-            fromfile="Before",
-            tofile="After",
-            lineterm="",
-            n=3,
-        )
-    )
-
-    if not diff:
-        return "The page changed, but no readable text difference was found."
-
-    useful_lines = [
-        line
-        for line in diff
-        if not line.startswith("---")
-        and not line.startswith("+++")
-        and not line.startswith("@@")
-    ]
-
-    if len(useful_lines) > max_lines:
-        useful_lines = useful_lines[:max_lines]
-        useful_lines.append("... (diff truncated)")
-
-    return "\n".join(useful_lines)
+def contains_keyword(text):
+    return KEYWORD.lower() in text.lower()
 
 
 def send_discord(webhook_url, message):
@@ -103,45 +79,44 @@ def send_discord(webhook_url, message):
 
         if response.status_code >= 400:
             print(
-                f"Discord webhook returned HTTP {response.status_code}: "
-                f"{response.text}"
+                f"Discord webhook returned HTTP "
+                f"{response.status_code}: {response.text}"
             )
 
     except Exception as e:
         print(f"Failed to send Discord notification: {e}")
 
 
-def within_monitoring_hours():
-    """
-    Return True from 6:00 AM through 11:59 PM Eastern Time.
-
-    Return False from midnight through 5:59 AM Eastern Time.
-    """
-
-    eastern_time = datetime.now(ZoneInfo(TIMEZONE))
-
-    return eastern_time.hour >= MONITOR_START_HOUR
-
-
 def main():
-    eastern_time = datetime.now(ZoneInfo(TIMEZONE))
+    now = datetime.now(ZoneInfo(TIMEZONE))
 
     print(
         "Current Eastern time: "
-        f"{eastern_time.strftime('%Y-%m-%d %I:%M:%S %p %Z')}"
+        f"{now.strftime('%Y-%m-%d %I:%M:%S %p %Z')}"
     )
 
-    # Do not contact any websites during the overnight pause.
-    if not within_monitoring_hours():
+    # ---------------------------------------------------------
+    # Stop completely after October 31, 2026.
+    # ---------------------------------------------------------
+    if now >= END_DATE:
+        print("Watcher has reached its October 31, 2026 end date.")
+        print("No websites will be checked.")
+        return
+
+    # ---------------------------------------------------------
+    # Overnight pause: midnight through 5:59 AM Eastern.
+    # ---------------------------------------------------------
+    if now.hour < MONITOR_START_HOUR:
         print(
             "Outside monitoring hours. "
-            "Monitoring resumes at 6:00 AM Eastern Time."
+            "Monitoring resumes at 6:00 AM Eastern."
         )
         return
 
-    print("Within monitoring hours. Starting website checks.")
+    print("Within monitoring hours.")
 
     webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
+
     sites = load_json(SITES_FILE, [])
     state = load_json(STATE_FILE, {})
 
@@ -149,20 +124,21 @@ def main():
         print("No sites configured in sites.json")
         return
 
-    changed_any = False
+    found_any = False
 
     for index, site in enumerate(sites):
         name = site.get("name", site["url"])
         url = site["url"]
-        selector = site.get("selector")
+        selector = site.get("selector", "")
 
-        # Wait between requests to avoid hitting websites too quickly.
-        # Do not wait before the first request.
+        # Wait between requests, but not before the first one.
         if index > 0:
             time.sleep(REQUEST_DELAY)
 
         try:
-            resp = requests.get(
+            print(f"Checking {name}...")
+
+            response = requests.get(
                 url,
                 headers={
                     "User-Agent": (
@@ -173,61 +149,63 @@ def main():
                 timeout=20,
             )
 
-            resp.raise_for_status()
+            response.raise_for_status()
 
         except Exception as e:
             print(f"Error fetching {name} ({url}): {e}")
             continue
 
-        text = extract_text(resp.text, selector)
+        text = extract_text(response.text, selector)
 
-        new_hash = hashlib.sha256(
-            text.encode("utf-8")
-        ).hexdigest()
+        keyword_found = contains_keyword(text)
 
-        prev_entry = state.get(url)
+        previous = state.get(url, {})
 
-        if prev_entry is None:
-            # First time seeing this site:
-            # record the baseline without sending an alert.
-            print(f"Baseline recorded for {name}")
+        # What was the keyword status during the previous check?
+        previously_found = previous.get("anniversary_found", False)
 
-        elif prev_entry["hash"] != new_hash:
-            print(f"Change detected for {name}")
+        if keyword_found:
+            found_any = True
 
-            old_text = prev_entry.get("text", "")
+            if not previously_found:
+                # The word has appeared since the previous check.
+                print(f"ANNIVERSARY FOUND for {name}")
 
-            diff = make_diff(old_text, text)
+                send_discord(
+                    webhook_url,
+                    (
+                        f"\U0001F389 **Anniversary keyword detected!**\n"
+                        f"**{name}**\n"
+                        f"{url}\n\n"
+                        f"The page now contains the word "
+                        f"**{KEYWORD}**."
+                    ),
+                )
 
-            message = (
-                f"\U0001F4E2 **{name}** just updated their events page!\n"
-                f"{url}\n\n"
-                f"```diff\n"
-                f"{diff}\n"
-                f"```"
-            )
-
-            send_discord(webhook_url, message)
-
-            changed_any = True
+            else:
+                print(f"Anniversary still present for {name}")
 
         else:
-            print(f"No change for {name}")
+            if previously_found:
+                print(f"Anniversary no longer present for {name}")
+            else:
+                print(f"No anniversary keyword for {name}")
 
-        # Save both the hash and the normalized text.
-        # The text allows future runs to show what changed.
+        # Only save the information we actually need.
+        #
+        # We deliberately DO NOT save the webpage text.
+        # This keeps private/unrelated page content out of state.json.
         state[url] = {
-            "hash": new_hash,
             "name": name,
-            "text": text,
+            "anniversary_found": keyword_found,
         }
 
     save_json(STATE_FILE, state)
 
-    if changed_any:
-        print("Done — changes detected.")
+    if found_any:
+        print("Done — one or more sites contain the anniversary keyword.")
     else:
-        print("Done — no changes.")
+        print("Done — no sites currently contain the anniversary keyword.")
 
 
 if __name__ == "__main__":
