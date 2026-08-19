@@ -14,16 +14,26 @@ SITES_FILE = "sites.json"
 # Eastern Time
 TIMEZONE = "America/Toronto"
 
-# Don't check websites between midnight and 6:00 AM Eastern.
+# Monitoring starts at 6:00 AM Eastern.
+# The watcher will not check websites between midnight and 6:00 AM.
 MONITOR_START_HOUR = 6
 
-# Stop the project after October 31, 2026.
-END_DATE = datetime(2026, 11, 1, tzinfo=ZoneInfo(TIMEZONE))
+# Stop monitoring after October 31, 2026.
+END_DATE = datetime(
+    2026,
+    11,
+    1,
+    tzinfo=ZoneInfo(TIMEZONE)
+)
 
-# Word we're looking for.
-KEYWORD = "anniversary"
+# These are the ONLY phrases that trigger an alert.
+# Matching is case-insensitive.
+KEYWORDS = [
+    "first anniversary",
+    "1st anniversary",
+]
 
-# Seconds to wait between website requests.
+# Seconds between website requests.
 REQUEST_DELAY = 2
 
 
@@ -61,8 +71,24 @@ def extract_text(html, selector):
     return " ".join(text.split())
 
 
-def contains_keyword(text):
-    return KEYWORD.lower() in text.lower()
+def find_keywords(text):
+    """
+    Return the anniversary phrases found on the page.
+
+    Matching is case-insensitive.
+
+    Only these phrases are considered:
+        - first anniversary
+        - 1st anniversary
+    """
+
+    text_lower = text.lower()
+
+    return [
+        keyword
+        for keyword in KEYWORDS
+        if keyword.lower() in text_lower
+    ]
 
 
 def send_discord(webhook_url, message):
@@ -98,14 +124,20 @@ def main():
     # ---------------------------------------------------------
     # Stop completely after October 31, 2026.
     # ---------------------------------------------------------
+
     if now >= END_DATE:
-        print("Watcher has reached its October 31, 2026 end date.")
+        print(
+            "Watcher has reached its October 31, 2026 end date."
+        )
         print("No websites will be checked.")
         return
 
     # ---------------------------------------------------------
-    # Overnight pause: midnight through 5:59 AM Eastern.
+    # Overnight pause.
+    #
+    # Do not check websites between midnight and 5:59 AM.
     # ---------------------------------------------------------
+
     if now.hour < MONITOR_START_HOUR:
         print(
             "Outside monitoring hours. "
@@ -126,12 +158,18 @@ def main():
 
     found_any = False
 
+    # ---------------------------------------------------------
+    # Check every website.
+    # ---------------------------------------------------------
+
     for index, site in enumerate(sites):
+
         name = site.get("name", site["url"])
         url = site["url"]
         selector = site.get("selector", "")
 
-        # Wait between requests, but not before the first one.
+        # Wait between requests.
+        # Don't wait before the first website.
         if index > 0:
             time.sleep(REQUEST_DELAY)
 
@@ -152,60 +190,138 @@ def main():
             response.raise_for_status()
 
         except Exception as e:
-            print(f"Error fetching {name} ({url}): {e}")
+            print(
+                f"Error fetching {name} ({url}): {e}"
+            )
             continue
 
-        text = extract_text(response.text, selector)
+        # -----------------------------------------------------
+        # Extract page text.
+        #
+        # IMPORTANT:
+        # We do not save this text anywhere.
+        # We only use it temporarily to search for the
+        # specified phrases.
+        # -----------------------------------------------------
 
-        keyword_found = contains_keyword(text)
+        text = extract_text(
+            response.text,
+            selector
+        )
+
+        # Find our two specific phrases.
+        matched_keywords = find_keywords(text)
+
+        # True if either phrase was found.
+        keyword_found = bool(matched_keywords)
+
+        # -----------------------------------------------------
+        # Retrieve previous state.
+        # -----------------------------------------------------
 
         previous = state.get(url, {})
 
-        # What was the keyword status during the previous check?
-        previously_found = previous.get("anniversary_found", False)
+        previously_found = previous.get(
+            "anniversary_found",
+            False
+        )
+
+        # -----------------------------------------------------
+        # Handle matches.
+        # -----------------------------------------------------
 
         if keyword_found:
+
             found_any = True
 
             if not previously_found:
-                # The word has appeared since the previous check.
-                print(f"ANNIVERSARY FOUND for {name}")
+
+                print(
+                    f"ANNIVERSARY PHRASE FOUND for {name}"
+                )
+
+                matched_text = ", ".join(
+                    matched_keywords
+                )
 
                 send_discord(
                     webhook_url,
                     (
-                        f"\U0001F389 **Anniversary keyword detected!**\n"
+                        "\U0001F389 "
+                        "**Anniversary announcement detected!**\n"
                         f"**{name}**\n"
                         f"{url}\n\n"
-                        f"The page now contains the word "
-                        f"**{KEYWORD}**."
+                        f"Matched: **{matched_text}**"
                     ),
                 )
 
             else:
-                print(f"Anniversary still present for {name}")
+
+                print(
+                    f"Anniversary phrase still present "
+                    f"for {name}"
+                )
 
         else:
-            if previously_found:
-                print(f"Anniversary no longer present for {name}")
-            else:
-                print(f"No anniversary keyword for {name}")
 
-        # Only save the information we actually need.
+            if previously_found:
+
+                print(
+                    f"Anniversary phrase no longer present "
+                    f"for {name}"
+                )
+
+            else:
+
+                print(
+                    f"No matching anniversary phrase "
+                    f"for {name}"
+                )
+
+        # -----------------------------------------------------
+        # Save ONLY the information needed for future checks.
         #
-        # We deliberately DO NOT save the webpage text.
-        # This keeps private/unrelated page content out of state.json.
+        # We deliberately do NOT save:
+        # - webpage text
+        # - page contents
+        # - private information
+        # - diffs
+        #
+        # Only the site name and whether a matching phrase
+        # was previously detected are stored.
+        # -----------------------------------------------------
+
         state[url] = {
             "name": name,
             "anniversary_found": keyword_found,
         }
 
-    save_json(STATE_FILE, state)
+    # ---------------------------------------------------------
+    # Save state.
+    # ---------------------------------------------------------
+
+    save_json(
+        STATE_FILE,
+        state
+    )
+
+    # ---------------------------------------------------------
+    # Final status.
+    # ---------------------------------------------------------
 
     if found_any:
-        print("Done — one or more sites contain the anniversary keyword.")
+
+        print(
+            "Done — one or more sites contain "
+            "a matching anniversary phrase."
+        )
+
     else:
-        print("Done — no sites currently contain the anniversary keyword.")
+
+        print(
+            "Done — no sites currently contain "
+            "a matching anniversary phrase."
+        )
 
 
 if __name__ == "__main__":
