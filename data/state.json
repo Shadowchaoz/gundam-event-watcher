@@ -81,7 +81,7 @@
   },
   "https://untouchables.ca/collections/major-events": {
     "name": "Untouchables",
-    "anniversary_found": false
+    "anniversary_found": true
   },
   "https://cardsandcoasters.com/collections/events": {
     "name": "Cards and Coasters",
