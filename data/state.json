@@ -29,7 +29,7 @@
   },
   "https://springerhobbies.com/collections/event-tickets": {
     "name": "Springer Hobbies",
-    "anniversary_found": false
+    "anniversary_found": true
   },
   "https://www.gameshack.ca/pages/event-calendar": {
     "name": "Game Shack",
