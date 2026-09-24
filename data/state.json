@@ -133,7 +133,7 @@
   },
   "https://emmettstoystop.com/pages/events": {
     "name": "Emmett's Toy Store",
-    "anniversary_found": false
+    "anniversary_found": true
   },
   "https://events.derpycards.ca/": {
     "name": "Derpy's",
