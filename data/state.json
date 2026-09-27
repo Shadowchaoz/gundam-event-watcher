@@ -121,7 +121,7 @@
   },
   "https://northernwartable.com/collections/events": {
     "name": "Northern War Table",
-    "anniversary_found": false
+    "anniversary_found": true
   },
   "https://store.401games.ca/collections/events-by-game-gundam": {
     "name": "401 Games",
